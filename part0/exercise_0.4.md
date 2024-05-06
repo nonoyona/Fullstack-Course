@@ -1,11 +1,21 @@
+```mermaid
 sequenceDiagram
     participant browser
     participant server
 
+    Note right of browser: Assume the page and all dependent files are loaded already
+
+    browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note
+    activate server
+    server-->>browser: Redirect response to /exampleapp/notes
+    deactivate server
+
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/notes
     activate server
-    server-->>browser: HTML document
+    server-->>browser: the html file
     deactivate server
+
+    Note right of browser: Now all neccesary files are loaded again
 
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/main.css
     activate server
@@ -25,3 +35,4 @@ sequenceDiagram
     deactivate server
 
     Note right of browser: The browser executes the callback function that renders the notes
+```
