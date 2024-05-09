@@ -47,7 +47,26 @@ const Person = ({ name, number }) => {
 };
 
 const App = () => {
-	const [persons, setPersons] = useState([]);
+	const [persons, setPersons] = useState([
+		{ name: "Arto Hellas", number: "040-123456", id: 1 },
+		{ name: "Ada Lovelace", number: "39-44-5323523", id: 2 },
+		{ name: "Dan Abramov", number: "12-43-234345", id: 3 },
+		{ name: "Mary Poppendieck", number: "39-23-6423122", id: 4 },
+	]);
+	const [filter, setFilter] = useState("");
+
+	const personsToShow =
+		filter === ""
+			? persons
+			: persons.filter((person) =>
+					person.name.toLowerCase().includes(filter.toLowerCase())
+			  );
+
+	const handleFilterChange = (event) => {
+		console.log("Filter changed to: ", event.target.value);
+		setFilter(event.target.value);
+	};
+
 	const handleAddPerson = (person) => {
 		if (persons.find((p) => p.number === person.number)) {
 			alert(`${person.number} is already added to phonebook`);
@@ -59,9 +78,12 @@ const App = () => {
 	return (
 		<div>
 			<h2>Phonebook</h2>
+			<div>Filter shown with</div>
+			<input value={filter} onChange={handleFilterChange} />
+			<h2>Add a new</h2>
 			<Form onPersonAdded={handleAddPerson} />
 			<h2>Numbers</h2>
-			{persons.map((person) => (
+			{personsToShow.map((person) => (
 				<Person key={person.number} name={person.name} number={person.number} />
 			))}
 		</div>
