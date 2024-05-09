@@ -46,6 +46,21 @@ const Person = ({ name, number }) => {
 	);
 };
 
+const PersonList = ({ persons }) => {
+  if (persons.length === 0) {
+    return <div>No persons to show</div>;
+  }
+
+
+  return (
+    <div>
+      {persons.map((person) => (
+        <Person key={person.number} name={person.name} number={person.number} />
+      ))}
+    </div>
+  );
+}
+
 const App = () => {
 	const [persons, setPersons] = useState([
 		{ name: "Arto Hellas", number: "040-123456", id: 1 },
@@ -83,9 +98,7 @@ const App = () => {
 			<h2>Add a new</h2>
 			<Form onPersonAdded={handleAddPerson} />
 			<h2>Numbers</h2>
-			{personsToShow.map((person) => (
-				<Person key={person.number} name={person.name} number={person.number} />
-			))}
+			<PersonList persons={personsToShow} />
 		</div>
 	);
 };
