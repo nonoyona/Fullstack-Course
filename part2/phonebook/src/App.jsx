@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { useState } from "react";
+import axios from "axios";
 
 const Form = ({ onPersonAdded }) => {
 	const [newName, setNewName] = useState("");
@@ -47,28 +49,42 @@ const Person = ({ name, number }) => {
 };
 
 const PersonList = ({ persons }) => {
-  if (persons.length === 0) {
-    return <div>No persons to show</div>;
-  }
+	if (persons.length === 0) {
+		return <div>No persons to show</div>;
+	}
 
-
-  return (
-    <div>
-      {persons.map((person) => (
-        <Person key={person.number} name={person.name} number={person.number} />
-      ))}
-    </div>
-  );
-}
+	return (
+		<div>
+			{persons.map((person) => (
+				<Person key={person.number} name={person.name} number={person.number} />
+			))}
+		</div>
+	);
+};
 
 const App = () => {
-	const [persons, setPersons] = useState([
-		{ name: "Arto Hellas", number: "040-123456", id: 1 },
-		{ name: "Ada Lovelace", number: "39-44-5323523", id: 2 },
-		{ name: "Dan Abramov", number: "12-43-234345", id: 3 },
-		{ name: "Mary Poppendieck", number: "39-23-6423122", id: 4 },
-	]);
+	const [persons, setPersons] = useState([]);
 	const [filter, setFilter] = useState("");
+
+	const fetchData = () => {
+		console.log("Fetching data from server");
+		axios.get("http://localhost:3001/persons").then((response) => {
+			console.log("Data fetched", response);
+      let newPersons = [...persons];
+			for (let person of response.data) {
+				if (persons.find((p) => p.number === person.number)) {
+					console.log("Person already in phonebook", person);
+					continue;
+				} else {
+					console.log("Adding person to phonebook", person);
+				}
+				newPersons.push(person);
+			}
+      setPersons(newPersons);
+		});
+	};
+
+	useEffect(fetchData, []);
 
 	const personsToShow =
 		filter === ""
