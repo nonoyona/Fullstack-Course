@@ -12,6 +12,8 @@ const App = () => {
 		"The only way to go fast, is to go well.",
 	];
 
+	const [votes, setVotes] = useState(new Array(anecdotes.length).fill(0));
+
 	const [selected, setSelected] = useState(0);
 
 	const nextAnecdote = () => {
@@ -19,10 +21,24 @@ const App = () => {
 		setSelected(random);
 	};
 
+	const vote = () => {
+		const copy = [...votes];
+		copy[selected] += 1;
+		setVotes(copy);
+	};
+
+  const indexWithMostVotes = votes.indexOf(Math.max(...votes));
+
 	return (
 		<>
+      <h1>Anecdote of the day</h1>
 			<div>{anecdotes[selected]}</div>
-			<button onClick={nextAnecdote} >next anecdote</button>
+			<div>has {votes[selected]} votes</div>
+			<button onClick={vote}>vote</button>
+			<button onClick={nextAnecdote}>next anecdote</button>
+      <h1>Anecdote with most votes</h1>
+      <div>{anecdotes[indexWithMostVotes]}</div>
+      <div>has {votes[indexWithMostVotes]} votes</div>
 		</>
 	);
 };
