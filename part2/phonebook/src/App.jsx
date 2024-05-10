@@ -2,29 +2,8 @@ import { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
 import Form from "./components/Form";
+import PersonList from "./components/Person";
 import book from "./logic/book";
-
-const Person = ({ name, number }) => {
-	return (
-		<div>
-			{name} {number}
-		</div>
-	);
-};
-
-const PersonList = ({ persons }) => {
-	if (persons.length === 0) {
-		return <div>No persons to show</div>;
-	}
-
-	return (
-		<div>
-			{persons.map((person) => (
-				<Person key={person.number} name={person.name} number={person.number} />
-			))}
-		</div>
-	);
-};
 
 const App = () => {
 	const [persons, setPersons] = useState([]);
@@ -77,6 +56,13 @@ const App = () => {
 		});
 	};
 
+	const handleDeletePerson = (id) => {
+		book.remove(id).then(() => {
+			console.log("Person deleted");
+			setPersons(persons.filter((person) => person.id !== id));
+		});
+	};
+
 	return (
 		<div>
 			<h2>Phonebook</h2>
@@ -85,7 +71,7 @@ const App = () => {
 			<h2>Add a new</h2>
 			<Form onPersonAdded={handleAddPerson} />
 			<h2>Numbers</h2>
-			<PersonList persons={personsToShow} />
+			<PersonList persons={personsToShow} onDelete={handleDeletePerson} />
 		</div>
 	);
 };
