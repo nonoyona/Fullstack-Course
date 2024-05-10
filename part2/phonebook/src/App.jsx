@@ -4,10 +4,12 @@ import axios from "axios";
 import Form from "./components/Form";
 import PersonList from "./components/Person";
 import book from "./logic/book";
+import Notification from "./components/Notification";
 
 const App = () => {
 	const [persons, setPersons] = useState([]);
 	const [filter, setFilter] = useState("");
+	const [notification, setNotification] = useState(null);
 
 	const fetchData = () => {
 		console.log("Fetching data from server");
@@ -40,6 +42,13 @@ const App = () => {
 					person.name.toLowerCase().includes(filter.toLowerCase())
 			  );
 
+	const showNotification = (message, level) => {
+		setNotification({ message, level });
+		setTimeout(() => {
+			setNotification(null);
+		}, 5000);
+	};
+
 	const handleFilterChange = (event) => {
 		console.log("Filter changed to: ", event.target.value);
 		setFilter(event.target.value);
@@ -56,6 +65,7 @@ const App = () => {
 				book.update(id, person).then((responsePerson) => {
 					console.log("Person updated", responsePerson);
 					setPersons(persons.map((p) => (p.id !== id ? p : responsePerson)));
+					showNotification(`Updated ${person.name}`, "success");
 				});
 			}
 			return;
@@ -63,6 +73,7 @@ const App = () => {
 		book.create(person).then((responsePerson) => {
 			console.log("New person created", responsePerson);
 			setPersons(persons.concat(responsePerson));
+			showNotification(`Added ${person.name}`, "success");
 		});
 	};
 
@@ -76,6 +87,7 @@ const App = () => {
 	return (
 		<div>
 			<h2>Phonebook</h2>
+			<Notification notification={notification} />
 			<div>Filter shown with</div>
 			<input value={filter} onChange={handleFilterChange} />
 			<h2>Add a new</h2>
