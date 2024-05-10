@@ -1,44 +1,8 @@
 import { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
-
-const Form = ({ onPersonAdded }) => {
-	const [newName, setNewName] = useState("");
-	const [newNumber, setNewNumber] = useState("");
-
-	const handleNameChange = (event) => {
-		console.log("Name changed to: ", event.target.value);
-		setNewName(event.target.value);
-	};
-
-	const handleNumberChange = (event) => {
-		console.log("Number changed to: ", event.target.value);
-		setNewNumber(event.target.value);
-	};
-
-	const handleAddPerson = (event) => {
-		event.preventDefault();
-		console.log("Adding new person: ", newName);
-		let person = { name: newName, number: newNumber };
-		setNewNumber("");
-		setNewName("");
-		onPersonAdded(person);
-	};
-
-	return (
-		<form onSubmit={handleAddPerson}>
-			<div>
-				name: <input value={newName} onChange={handleNameChange} />
-			</div>
-			<div>
-				number: <input value={newNumber} onChange={handleNumberChange} />
-			</div>
-			<div>
-				<button type="submit">add</button>
-			</div>
-		</form>
-	);
-};
+import Form from "./components/Form";
+import book from "./logic/book";
 
 const Person = ({ name, number }) => {
 	return (
@@ -68,20 +32,24 @@ const App = () => {
 
 	const fetchData = () => {
 		console.log("Fetching data from server");
-		axios.get("http://localhost:3001/persons").then((response) => {
-			console.log("Data fetched", response);
-      let newPersons = [...persons];
-			for (let person of response.data) {
-				if (persons.find((p) => p.number === person.number)) {
-					console.log("Person already in phonebook", person);
-					continue;
-				} else {
-					console.log("Adding person to phonebook", person);
+		book
+			.getAll()
+			.then((responsePersons) => {
+				let newPersons = [...persons];
+				for (let person of responsePersons) {
+					if (persons.find((p) => p.number === person.number)) {
+						console.log("Person already in phonebook", person);
+						continue;
+					} else {
+						console.log("Adding person to phonebook", person);
+					}
+					newPersons.push(person);
 				}
-				newPersons.push(person);
-			}
-      setPersons(newPersons);
-		});
+				setPersons(newPersons);
+			})
+			.catch((error) => {
+				console.log("Error fetching data", error);
+			});
 	};
 
 	useEffect(fetchData, []);
@@ -103,7 +71,10 @@ const App = () => {
 			alert(`${person.number} is already added to phonebook`);
 			return;
 		}
-		setPersons(persons.concat(person));
+		book.create(person).then((responsePerson) => {
+			console.log("New person created", responsePerson);
+			setPersons(persons.concat(responsePerson));
+		});
 	};
 
 	return (
