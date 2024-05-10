@@ -62,11 +62,20 @@ const App = () => {
 				)
 			) {
 				const id = persons.find((p) => p.name === person.name).id;
-				book.update(id, person).then((responsePerson) => {
-					console.log("Person updated", responsePerson);
-					setPersons(persons.map((p) => (p.id !== id ? p : responsePerson)));
-					showNotification(`Updated ${person.name}`, "success");
-				});
+				book
+					.update(id, person)
+					.then((responsePerson) => {
+						console.log("Person updated", responsePerson);
+						setPersons(persons.map((p) => (p.id !== id ? p : responsePerson)));
+						showNotification(`Updated ${person.name}`, "success");
+					})
+					.catch(() => {
+						showNotification(
+							`Information of ${person.name} has been deleted from the server and cannot be updated`,
+							"error"
+						);
+						setPersons(persons.filter((p) => p.id !== id));
+					});
 			}
 			return;
 		}
@@ -78,10 +87,21 @@ const App = () => {
 	};
 
 	const handleDeletePerson = (id) => {
-		book.remove(id).then(() => {
-			console.log("Person deleted");
-			setPersons(persons.filter((person) => person.id !== id));
-		});
+		book
+			.remove(id)
+			.then(() => {
+				console.log("Person deleted");
+				setPersons(persons.filter((person) => person.id !== id));
+			})
+			.catch(() => {
+				showNotification(
+					`Information of ${
+						persons.find((p) => p.id === id).name
+					} has already been removed from the server`,
+					"error"
+				);
+				setPersons(persons.filter((person) => person.id !== id));
+			});
 	};
 
 	return (
