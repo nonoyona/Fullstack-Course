@@ -102,12 +102,6 @@ const App = () => {
 			})
 			.catch((error) => {
 				console.log("Error creating new person", error.response.data);
-				if (error.response.data.kind === "minlength") {
-					const field = error.response.data.path;
-					const value = error.response.data.value;
-					showNotification(`${field} (${value}) is too short`, "error");
-					return;
-				}
 				showNotification(error.response.data.message, "error");
 			});
 	};
