@@ -10,6 +10,7 @@ const App = () => {
 	const [persons, setPersons] = useState([]);
 	const [filter, setFilter] = useState("");
 	const [notification, setNotification] = useState(null);
+	const [notificationHandle, setNotificationHandle] = useState(null);
 
 	const fetchData = () => {
 		console.log("Fetching data from server");
@@ -43,10 +44,17 @@ const App = () => {
 			  );
 
 	const showNotification = (message, level) => {
+		if (notificationHandle) {
+			clearTimeout(notificationHandle);
+		}
+
 		setNotification({ message, level });
-		setTimeout(() => {
-			setNotification(null);
-		}, 5000);
+		setNotificationHandle(
+			setTimeout(() => {
+				setNotification(null);
+				setNotificationHandle(null);
+			}, 5000)
+		);
 	};
 
 	const handleFilterChange = (event) => {
@@ -69,21 +77,39 @@ const App = () => {
 						setPersons(persons.map((p) => (p.id !== id ? p : responsePerson)));
 						showNotification(`Updated ${person.name}`, "success");
 					})
-					.catch(() => {
-						showNotification(
-							`Information of ${person.name} has been deleted from the server and cannot be updated`,
-							"error"
-						);
-						setPersons(persons.filter((p) => p.id !== id));
+					.catch((error) => {
+						console.log("Error updating person", error);
+						const status = error.response.status;
+						if (status === 404) {
+							showNotification(
+								`Information of ${person.name} has already been removed from the server`,
+								"error"
+							);
+							setPersons(persons.filter((p) => p.id !== id));
+						} else if (status === 400) {
+							showNotification(error.response.data.message, "error");
+						}
 					});
 			}
 			return;
 		}
-		book.create(person).then((responsePerson) => {
-			console.log("New person created", responsePerson);
-			setPersons(persons.concat(responsePerson));
-			showNotification(`Added ${person.name}`, "success");
-		});
+		book
+			.create(person)
+			.then((responsePerson) => {
+				console.log("New person created", responsePerson);
+				setPersons(persons.concat(responsePerson));
+				showNotification(`Added ${person.name}`, "success");
+			})
+			.catch((error) => {
+				console.log("Error creating new person", error.response.data);
+				if (error.response.data.kind === "minlength") {
+					const field = error.response.data.path;
+					const value = error.response.data.value;
+					showNotification(`${field} (${value}) is too short`, "error");
+					return;
+				}
+				showNotification(error.response.data.message, "error");
+			});
 	};
 
 	const handleDeletePerson = (id) => {
