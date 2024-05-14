@@ -1,6 +1,6 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
 import { useEffect } from "react";
 import { useState } from "react";
-import axios from "axios";
 import Form from "./components/Form";
 import PersonList from "./components/Person";
 import book from "./logic/book";
@@ -34,7 +34,7 @@ const App = () => {
 			});
 	};
 
-	useEffect(fetchData, []);
+	useEffect(fetchData);
 
 	const personsToShow =
 		filter === ""

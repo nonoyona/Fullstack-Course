@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 const InnerNotification = ({ message, level }) => {
 	const style = {
 		color: level === "error" ? "red" : "green",
