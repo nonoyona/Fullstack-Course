@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import auth from "./services/auth";
+import PropTypes from "prop-types";
 
 const Authentication = ({ user, setUser, notify }) => {
 	const handleLogin = async ({ username, password }) => {
@@ -35,6 +36,12 @@ const Authentication = ({ user, setUser, notify }) => {
 	);
 };
 
+Authentication.propTypes = {
+	user: PropTypes.object,
+	setUser: PropTypes.func.isRequired,
+	notify: PropTypes.func.isRequired,
+};
+
 const LoginForm = ({ handleLogin }) => {
 	const onSubmit = (event) => {
 		event.preventDefault();
@@ -56,6 +63,10 @@ const LoginForm = ({ handleLogin }) => {
 			<button type="submit">login</button>
 		</form>
 	);
+};
+
+LoginForm.propTypes = {
+	handleLogin: PropTypes.func.isRequired,
 };
 
 export default Authentication;

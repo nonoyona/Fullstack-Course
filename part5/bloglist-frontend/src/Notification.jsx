@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 
 const Notification = ({ notification, clearNotification }) => {
 	const [notificationHandle, setNotificationHandle] = useState(null);
@@ -33,6 +34,11 @@ const Notification = ({ notification, clearNotification }) => {
 	}
 
 	return <div style={style}>{notification.message}</div>;
+};
+
+Notification.propTypes = {
+	notification: PropTypes.object,
+	clearNotification: PropTypes.func.isRequired,
 };
 
 export default Notification;

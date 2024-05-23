@@ -1,4 +1,5 @@
 import blogs from "./services/blogs";
+import PropTypes from "prop-types";
 
 const CreateBlog = ({ addBlog, notify }) => {
 	const handleCreate = async (event) => {
@@ -41,6 +42,11 @@ const CreateBlog = ({ addBlog, notify }) => {
 			<button type="submit">Create</button>
 		</form>
 	);
+};
+
+CreateBlog.propTypes = {
+	addBlog: PropTypes.func.isRequired,
+	notify: PropTypes.func.isRequired,
 };
 
 export default CreateBlog;

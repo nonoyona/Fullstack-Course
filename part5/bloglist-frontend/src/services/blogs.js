@@ -17,11 +17,26 @@ const create = async (newObject) => {
 	};
 	try {
 		const response = await axios.post(baseUrl, newObject, config);
-    console.log("Created blog: ", response.data);
+		console.log("Created blog: ", response.data);
 		return response.data;
 	} catch (error) {
-    console.error("Error creating blog: ", error);
-  }
+		console.error("Error creating blog: ", error);
+	}
 };
 
-export default { getAll, setToken, create };
+const like = async (id, previousLikes) => {
+	const response = await axios.put(`${baseUrl}/${id}`, {
+		likes: previousLikes + 1,
+	});
+	return response.data;
+};
+
+const remove = async (id) => {
+	const config = {
+		headers: { Authorization: token },
+	};
+	const response = await axios.delete(`${baseUrl}/${id}`, config);
+	return response.data;
+};
+
+export default { getAll, setToken, create, like, remove };

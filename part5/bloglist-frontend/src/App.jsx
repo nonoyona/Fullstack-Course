@@ -4,6 +4,7 @@ import blogService from "./services/blogs";
 import Authentication from "./Authentication";
 import CreateBlog from "./CreateBlog";
 import Notification from "./Notification";
+import Toggleable from "./components/Toggleable";
 
 const App = () => {
 	const [blogs, setBlogs] = useState([]);
@@ -11,7 +12,9 @@ const App = () => {
 	const [notification, setNotification] = useState(null);
 
 	useEffect(() => {
-		blogService.getAll().then((blogs) => setBlogs(blogs));
+		blogService
+			.getAll()
+			.then((blogs) => setBlogs(blogs.sort((a, b) => b.likes - a.likes)));
 	}, []);
 
 	const clearNotification = () => {
@@ -41,6 +44,18 @@ const App = () => {
 		setBlogs(blogs.concat(blog));
 	};
 
+	const updateBlog = (updatedBlog) => {
+		if (!updatedBlog.title) {
+			const updatedBlogs = blogs.filter((blog) => blog.id !== updatedBlog.id);
+			setBlogs(updatedBlogs);
+			return;
+		}
+		const updatedBlogs = blogs
+			.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog))
+			.sort((a, b) => b.likes - a.likes);
+		setBlogs(updatedBlogs);
+	};
+
 	return (
 		<div>
 			<Notification
@@ -49,9 +64,11 @@ const App = () => {
 			/>
 			<h2>blogs</h2>
 			<Authentication user={user} setUser={setUser} notify={notify} />
-			<CreateBlog addBlog={addBlog} notify={notify} />
+			<Toggleable title="new blog">
+				<CreateBlog addBlog={addBlog} notify={notify} />
+			</Toggleable>
 			{blogs.map((blog) => (
-				<Blog key={blog.id} blog={blog} />
+				<Blog key={blog.id} blog={blog} updateBlog={updateBlog} notify={notify} user={user} />
 			))}
 		</div>
 	);
