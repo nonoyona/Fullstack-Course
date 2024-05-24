@@ -40,20 +40,41 @@ const App = () => {
 		);
 	}
 
-	const addBlog = (blog) => {
-		setBlogs(blogs.concat(blog));
-	};
-
-	const updateBlog = (updatedBlog) => {
-		if (!updatedBlog.title) {
-			const updatedBlogs = blogs.filter((blog) => blog.id !== updatedBlog.id);
-			setBlogs(updatedBlogs);
+	const addBlog = async (blog) => {
+		const dbBlog = await blogs.create(blog);
+		if (!dbBlog) {
+			console.log("No blog created.");
+			notify("Error creating blog", "error");
 			return;
 		}
+		setBlogs(blogs.concat(dbBlog));
+	};
+
+
+	const handleLike = async (blog) => {
+		console.log("Submitting like for blog: ", blog.id, blog.likes);
+		const updatedBlog = await blogs.like(blog.id, blog.likes);
+		console.log("Updated blog: ", updatedBlog);
 		const updatedBlogs = blogs
 			.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog))
 			.sort((a, b) => b.likes - a.likes);
 		setBlogs(updatedBlogs);
+	};
+
+	const handleRemove = async (blog) => {
+		console.log("Removing blog: ", blog.id);
+		if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
+			try {
+				await blogs.remove(blog.id);
+				notify(`Removed blog ${blog.title} by ${blog.author}`);
+				console.log("Removed blog: ", blog.id);
+				const updatedBlogs = blogs.filter((blog) => blog.id !== blog.id);
+				setBlogs(updatedBlogs);
+			} catch (error) {
+				console.error("Error removing blog: ", error);
+				notify("Error removing blog", "error");
+			}
+		}
 	};
 
 	return (
@@ -68,7 +89,13 @@ const App = () => {
 				<CreateBlog addBlog={addBlog} notify={notify} />
 			</Toggleable>
 			{blogs.map((blog) => (
-				<Blog key={blog.id} blog={blog} updateBlog={updateBlog} notify={notify} user={user} />
+				<Blog
+					key={blog.id}
+					blog={blog}
+					handleLike={() => handleLike(blog)}
+					handleRemove={() => handleRemove(blog)}
+					user={user}
+				/>
 			))}
 		</div>
 	);

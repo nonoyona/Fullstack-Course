@@ -1,27 +1,26 @@
-import blogs from "./services/blogs";
 import PropTypes from "prop-types";
+import { useState } from "react";
 
 const CreateBlog = ({ addBlog, notify }) => {
-	const handleCreate = async (event) => {
+	const [title, setTitle] = useState("");
+	const [author, setAuthor] = useState("");
+	const [url, setUrl] = useState("");
+
+	const handleCreate = (event) => {
 		event.preventDefault();
-		const title = event.target.title.value;
-		const author = event.target.author.value;
-		const url = event.target.url.value;
 		if (!title || !author || !url) {
 			notify("Please fill in all fields", "error");
 			return;
 		}
-		event.target.title.value = "";
-		event.target.author.value = "";
-		event.target.url.value = "";
+		setTitle("");
+		setAuthor("");
+		setUrl("");
 
-		const blog = await blogs.create({ title, author, url });
-		if (!blog) {
-			console.log("No blog created.");
-			notify("Error creating blog", "error");
-			return;
-		}
-		addBlog(blog);
+		addBlog({
+			title,
+			author,
+			url,
+		});
 	};
 
 	return (
@@ -29,15 +28,33 @@ const CreateBlog = ({ addBlog, notify }) => {
 			<h2>create new</h2>
 			<p>
 				title:
-				<input type="text" name="title" id="title" />
+				<input
+					type="text"
+					name="title"
+					id="title"
+					value={title}
+					onChange={(event) => setTitle(event.target.value)}
+				/>
 			</p>
 			<p>
 				author:
-				<input type="text" name="author" id="author" />
+				<input
+					type="text"
+					name="author"
+					id="author"
+					value={author}
+					onChange={(event) => setAuthor(event.target.value)}
+				/>
 			</p>
 			<p>
 				url:
-				<input type="text" name="url" id="url" />
+				<input
+					type="text"
+					name="url"
+					id="url"
+					value={url}
+					onChange={(event) => setUrl(event.target.value)}
+				/>
 			</p>
 			<button type="submit">Create</button>
 		</form>

@@ -32,7 +32,7 @@ const Toggleable = ({ children, title, show }) => {
 };
 
 Toggleable.propTypes = {
-	title: PropTypes.string.isRequired,
+	title: PropTypes.string,
 	show: PropTypes.bool,
 	children: PropTypes.node.isRequired,
 };
