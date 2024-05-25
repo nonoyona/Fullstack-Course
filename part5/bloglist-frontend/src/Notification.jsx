@@ -33,7 +33,7 @@ const Notification = ({ notification, clearNotification }) => {
 		style.backgroundColor = "lightgreen";
 	}
 
-	return <div style={style}>{notification.message}</div>;
+	return <div style={style} id="notification">{notification.message}</div>;
 };
 
 Notification.propTypes = {

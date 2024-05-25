@@ -14,7 +14,7 @@ const Blog = ({ blog, handleLike, handleRemove, user }) => {
 
 	const toggleText = showDetails ? "hide" : "view";
 	return (
-		<div style={{ borderStyle: "solid", margin: 5, padding: 5 }}>
+		<div className="blog-list-item" style={{ borderStyle: "solid", margin: 5, padding: 5 }}>
 			{blog.title} {blog.author}
 			<button onClick={toggleVisibility}>{toggleText}</button>
 			<Toggleable show={showDetails}>
